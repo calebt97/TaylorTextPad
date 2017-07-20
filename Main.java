@@ -55,7 +55,7 @@ public class Main extends JFrame {
               }
             }
         });
-
+        //resaves file that has already been opened or created
         save = new JButton("Save");
         save.addActionListener(new ActionListener() {
             @Override
