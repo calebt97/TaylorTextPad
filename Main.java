@@ -25,6 +25,7 @@ public class Main extends JFrame {
     JMenuItem saveAs;
     JMenuItem save;
     JPanel buttonsettings;
+    JTextField size;
     boolean sameOpen = false; //will enable "Save function" if set to true later on
     String openedName;
     JMenuItem quit;
@@ -33,6 +34,10 @@ public class Main extends JFrame {
     String savePath;
     JButton run;
     String fileName;
+    JLabel fontLabel;
+    JMenuBar optionsMenu;
+    JComboBox font;
+    JLabel sizeLabel;
     File f;
 
     public Main() throws IOException{
@@ -53,82 +58,19 @@ public class Main extends JFrame {
 
         //Builds run button, If clicked and file is saved, attempts to run as Java file
         run = new JButton("Run");
-        run.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                if(!sameOpen) {
-                    JOptionPane.showMessageDialog(null, "You need to save your file first");
-                    try {
-                        saveAsFile();
-                    }
-                    catch(Exception a){a.printStackTrace();}
-                }
-                try {
-                    CompileAndRun car = new CompileAndRun(fileName,savePath);
-                    System.out.println("Completed");
-
-                }
-                catch(Exception i){
-                    i.printStackTrace();
-                }
-            }
-        });
+        buildRunButton();
 
         //Saves new file
         saveAs = new JMenuItem("Save As");
-        saveAs.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                try {
-                    saveAsFile();
-                }
-                catch(IOException a){
-                    a.printStackTrace();
-                }
-            }
-        });
+        buildSaveAs();
 
         //Updates file under current name
         save = new JMenuItem("Save");
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(sameOpen){
-                    try {
-                        saveFile(savePath);
-                    } catch (IOException a) {
-                        a.printStackTrace();
-                    }
-
-                }
-                else{
-                    JOptionPane.showMessageDialog(null, "This is" +
-                            " an unnamed file, please use the Save As");
-                }
-            }});
+        buildSave();
 
         //Will close/exit program. Will also Autosave changes
         quit = new JMenuItem("Quit");
-        quit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to quit?");
-                if(option == 0){
-                    try {
-                        saveFile(openedName);
-                        System.exit(0);
-                    }
-                    catch(IOException io){
-                        System.exit(0);
-                    }
-                    catch(Exception i){
-                        System.exit(0);
-                    }
-                }
-
-            }
-        });
-
+        buildQuit();
 
         //opens directory/picks file to open
         fileDirectory = new JMenuItem("Open File");
@@ -138,91 +80,17 @@ public class Main extends JFrame {
                 openFile();
             }});
 
-
         //allows change in font style, done with drop down box. with label
-        JLabel fontLabel = new JLabel("Font");
-        String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
-        JComboBox font = new JComboBox(fontChoices);
-        font.setPreferredSize(new Dimension(75,25));
-        font.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        fontLabel = new JLabel("Font");
+        font = buildFontLabel();
 
-                int index = font.getSelectedIndex();
-                try{
-                    switch(index){
-                        case 0: fb.setStyle("Arial");
-                            break;
-                        case 1: fb.setStyle("Times New Roman");
-                            break;
-                        case 2: fb.setStyle("Calibri");
-                            break;
-                        case 3: fb.setStyle("Jokerman");
-                            break;
-
-                    }
-                }
-                catch(Exception error){
-                    error.printStackTrace();
-                }
-                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
-                frame.repaint();
-
-            }
-        });
-
-
-//changes font size, no need to confirm with button, just does as number changes
+        //changes font size, no need to confirm with button, just does as number changes
         //defaults to 20, if number is cleared, defaults back to 20
+        sizeLabel = new JLabel("Font Size");
+        size = new JTextField(4);
+        buildSize();
 
-        JLabel sizeLabel = new JLabel("Font Size");
-        JTextField size = new JTextField(4);
-
-        size.setText("20");
-
-        size.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if(size.getText().isEmpty())
-                    size.setText("20");
-                fb.setSize(20);
-                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
-            }
-        });
-        size.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if(!size.getText().isEmpty()){
-
-                    try{
-                        int newFont = Integer.parseInt(size.getText());
-                        fb.setSize(newFont);
-                        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
-                    }
-                    catch (Exception a){
-                        System.out.println("Improper input");
-                    }
-                }
-
-            }
-        });
-
-
-        JMenuBar optionsMenu = new JMenuBar();
+         optionsMenu = new JMenuBar();
         JMenu list = new JMenu("Options");
 
         //creates drop down menu, adds to menu, then panel
@@ -232,30 +100,9 @@ public class Main extends JFrame {
         list.add(quit);
         optionsMenu.add(list);
 
-        buttonsettings.add(optionsMenu);
-        buttonsettings.add(run);
-        buttonsettings.add(fontLabel);
-        buttonsettings.add(font);
-        buttonsettings.add(sizeLabel);
-        buttonsettings.add(size);
-
-        //puts them in order
-        buttonsettings.setLayout(new FlowLayout(0));
-
+        buildButtonSettings();
         //sets default font/area size
-        text = new JTextArea();
-        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
-        text.setWrapStyleWord(true);
-        text.setLineWrap(true);
-
-        frame.setTitle("TaylorTextPad");
-        buttonsettings.setSize(JFrame.WIDTH,200);
-        frame.add(text);
-        frame.add(buttonsettings,BorderLayout.NORTH);
-        frame.setLocationRelativeTo(null);
-
-        frame.setVisible(true);
-
+        finishUp();
 
     }
 
@@ -365,6 +212,7 @@ public class Main extends JFrame {
 
     }
 
+    //Opens the file, wherever it is within the computer
     public void openFile(){
 
 
@@ -394,4 +242,189 @@ public class Main extends JFrame {
     }
 
 
+    public JComboBox buildFontLabel(){
+
+        String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
+        JComboBox font = new JComboBox(fontChoices);
+        font.setPreferredSize(new Dimension(75,25));
+        font.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int index = font.getSelectedIndex();
+                try{
+                    switch(index){
+                        case 0: fb.setStyle("Arial");
+                            break;
+                        case 1: fb.setStyle("Times New Roman");
+                            break;
+                        case 2: fb.setStyle("Calibri");
+                            break;
+                        case 3: fb.setStyle("Jokerman");
+                            break;
+
+                    }
+                }
+                catch(Exception error){
+                    error.printStackTrace();
+                }
+                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                frame.repaint();
+
+            }
+        });
+        return font;
+    }
+
+
+    public void buildQuit(){
+        quit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to quit?");
+                if(option == 0){
+                    try {
+                        saveFile(openedName);
+                        System.exit(0);
+                    }
+                    catch(IOException io){
+                        System.exit(0);
+                    }
+                    catch(Exception i){
+                        System.exit(0);
+                    }
+                }
+
+            }
+        });
+    }
+
+
+    public void buildSize(){
+        size.setText("20");
+        size.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(size.getText().isEmpty())
+                    size.setText("20");
+                fb.setSize(20);
+                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+            }
+        });
+        size.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(!size.getText().isEmpty()){
+
+                    try{
+                        int newFont = Integer.parseInt(size.getText());
+                        fb.setSize(newFont);
+                        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                    }
+                    catch (Exception a){
+                        System.out.println("Improper input");
+                    }
+                }
+
+            }
+        });
+    }
+
+
+    public void buildSave(){
+        save.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(sameOpen){
+                    try {
+                        saveFile(savePath);
+                    } catch (IOException a) {
+                        a.printStackTrace();
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "This is" +
+                            " an unnamed file, please use the Save As");
+                }
+            }});
+    }
+
+
+    public void buildSaveAs(){
+        saveAs.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                try {
+                    saveAsFile();
+                }
+                catch(IOException a){
+                    a.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public void buildRunButton(){
+        run.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                if(!sameOpen) {
+                    JOptionPane.showMessageDialog(null, "You need to save your file first");
+                    try {
+                        saveAsFile();
+                    }
+                    catch(Exception a){a.printStackTrace();}
+                }
+                try {
+                    new CompileAndRun(fileName,savePath);
+                    System.out.println("Completed");
+
+                }
+                catch(Exception i){
+                    i.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    public void buildButtonSettings(){
+        buttonsettings.add(optionsMenu);
+        buttonsettings.add(run);
+        buttonsettings.add(fontLabel);
+        buttonsettings.add(font);
+        buttonsettings.add(sizeLabel);
+        buttonsettings.add(size);
+        //puts them in order
+        buttonsettings.setLayout(new FlowLayout(0));
+
+    }
+
+    
+    public void finishUp(){
+        text = new JTextArea();
+        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+        text.setWrapStyleWord(true);
+        text.setLineWrap(true);
+        frame.setTitle("TaylorTextPad");
+        buttonsettings.setSize(JFrame.WIDTH,200);
+        frame.add(text);
+        frame.add(buttonsettings,BorderLayout.NORTH);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 }
