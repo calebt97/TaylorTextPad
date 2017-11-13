@@ -3,38 +3,84 @@
  */
 
 
-
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
+import java.lang.*;
+
+/*
+wishlist for v2:
+build console for output
+highlight syntax
+ */
+
+
 public class Main extends JFrame {
-    //k used throughout is an arbitrary string name, used for lack of a better term.
+
     JFrame frame;
     JTextArea text;
-    JButton saveAs;
-    JButton save;
-    JPanel buttonPanel;
-    JButton open;
-    boolean sameOpen = false;
+    JMenuItem saveAs;
+    JMenuItem save;
+    JPanel buttonsettings;
+    boolean sameOpen = false; //will enable "Save function" if set to true later on
     String openedName;
-    int counter = 0;
+    JMenuItem quit;
+    FontBuilder fb;
+    JMenuItem fileDirectory;
+    String savePath;
+    JButton run;
+    String fileName;
+    File f;
+
     public Main() throws IOException{
 
-        //creates the GUI
+        //defaults font
+        fb = new FontBuilder();
+
+        //creates the GUI, *note to increase size to full screen remove resizable clause
         frame = new JFrame();
-        frame.setSize(500,500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        buttonPanel = new JPanel();
-        //Allows user to open old files
-        open = new JButton("Open");
-        open.addActionListener(new ActionListener() {
+        frame.setSize(800,800);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        //builds window listener, gives option to save on close, or open a file upon running program
+        buildWindowListener();
+        buttonsettings = new JPanel();
+
+        //Builds run button, If clicked and file is saved, attempts to run as Java file
+        run = new JButton("Run");
+        run.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                if(!sameOpen) {
+                    JOptionPane.showMessageDialog(null, "You need to save your file first");
+                    try {
+                        saveAsFile();
+                    }
+                    catch(Exception a){a.printStackTrace();}
+                }
+                try {
+                    CompileAndRun car = new CompileAndRun(fileName,savePath);
+                    System.out.println("Completed");
+
+                }
+                catch(Exception i){
+                    i.printStackTrace();
+                }
+            }
+        });
+
+        //Saves new file
+        saveAs = new JMenuItem("Save As");
+        saveAs.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
                 try {
-                    openFile();
+                    saveAsFile();
                 }
                 catch(IOException a){
                     a.printStackTrace();
@@ -42,88 +88,211 @@ public class Main extends JFrame {
             }
         });
 
-        //Saves new file
-        saveAs = new JButton("Save As");
-        saveAs.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                try {
-                    saveAsFile();
-                }
-              catch(IOException a){
-                    a.printStackTrace();
-              }
-            }
-        });
-        //resaves file that has already been opened or created
-        save = new JButton("Save");
+        //Updates file under current name
+        save = new JMenuItem("Save");
         save.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(sameOpen){
-                try {
-                    saveFile(openedName);
-                } catch (IOException a) {
-                    a.printStackTrace();
-                }
+                    try {
+                        saveFile(savePath);
+                    } catch (IOException a) {
+                        a.printStackTrace();
+                    }
 
-            }
-            else{
+                }
+                else{
                     JOptionPane.showMessageDialog(null, "This is" +
                             " an unnamed file, please use the Save As");
                 }
             }});
 
-        buttonPanel.add(open);
-        buttonPanel.add(saveAs);
-        buttonPanel.add(save);
+        //Will close/exit program. Will also Autosave changes
+        quit = new JMenuItem("Quit");
+        quit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to quit?");
+                if(option == 0){
+                    try {
+                        saveFile(openedName);
+                        System.exit(0);
+                    }
+                    catch(IOException io){
+                        System.exit(0);
+                    }
+                    catch(Exception i){
+                        System.exit(0);
+                    }
+                }
+
+            }
+        });
+
+
+        //opens directory/picks file to open
+        fileDirectory = new JMenuItem("Open File");
+        fileDirectory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openFile();
+            }});
+
+
+        //allows change in font style, done with drop down box. with label
+        JLabel fontLabel = new JLabel("Font");
+        String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
+        JComboBox font = new JComboBox(fontChoices);
+        font.setPreferredSize(new Dimension(75,25));
+        font.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                int index = font.getSelectedIndex();
+                try{
+                    switch(index){
+                        case 0: fb.setStyle("Arial");
+                            break;
+                        case 1: fb.setStyle("Times New Roman");
+                            break;
+                        case 2: fb.setStyle("Calibri");
+                            break;
+                        case 3: fb.setStyle("Jokerman");
+                            break;
+
+                    }
+                }
+                catch(Exception error){
+                    error.printStackTrace();
+                }
+                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                frame.repaint();
+
+            }
+        });
+
+
+//changes font size, no need to confirm with button, just does as number changes
+        //defaults to 20, if number is cleared, defaults back to 20
+
+        JLabel sizeLabel = new JLabel("Font Size");
+        JTextField size = new JTextField(4);
+
+        size.setText("20");
+
+        size.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(size.getText().isEmpty())
+                    size.setText("20");
+                fb.setSize(20);
+                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+            }
+        });
+        size.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(!size.getText().isEmpty()){
+
+                    try{
+                        int newFont = Integer.parseInt(size.getText());
+                        fb.setSize(newFont);
+                        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                    }
+                    catch (Exception a){
+                        System.out.println("Improper input");
+                    }
+                }
+
+            }
+        });
+
+
+        JMenuBar optionsMenu = new JMenuBar();
+        JMenu list = new JMenu("Options");
+
+        //creates drop down menu, adds to menu, then panel
+        list.add(fileDirectory);
+        list.add(saveAs);
+        list.add(save);
+        list.add(quit);
+        optionsMenu.add(list);
+
+        buttonsettings.add(optionsMenu);
+        buttonsettings.add(run);
+        buttonsettings.add(fontLabel);
+        buttonsettings.add(font);
+        buttonsettings.add(sizeLabel);
+        buttonsettings.add(size);
+
+        //puts them in order
+        buttonsettings.setLayout(new FlowLayout(0));
+
+        //sets default font/area size
         text = new JTextArea();
-        text.setFont(new Font("Arial",Font.PLAIN,16));
-        text.setPreferredSize(new Dimension(500,490));
+        text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+        text.setWrapStyleWord(true);
+        text.setLineWrap(true);
+
+        frame.setTitle("TaylorTextPad");
+        buttonsettings.setSize(JFrame.WIDTH,200);
         frame.add(text);
-        frame.add(buttonPanel,BorderLayout.NORTH);
+        frame.add(buttonsettings,BorderLayout.NORTH);
         frame.setLocationRelativeTo(null);
+
         frame.setVisible(true);
 
 
     }
+
     public static void main(String[] args) throws IOException {
-new Main();
+        new Main();
     }
 
-
+    /*If this is the first time a file is being saved, it goes to this method.
+     That is determined by the status of the sameOpen variable
+    */
     public void saveAsFile()throws IOException{
-        sameOpen = true;
-        String k = JOptionPane.showInputDialog(null, "Please input the file name");
-        openedName = k;
-        File file = new File(k);
-        FileWriter inFile = new FileWriter(file);
-        inFile.write(text.getText());
-        inFile.close();
-JOptionPane.showMessageDialog(null,"Saved");
 
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new File("/home/me/Documents"));
+        int k = chooser.showSaveDialog(null);
 
-    }
-
-    public void openFile() throws IOException{
-        sameOpen = true;
-        String k = JOptionPane.showInputDialog(null, "Please input the file name");
-        openedName = k;
-        try{
-            File file = new File(k);
-            Scanner inFile = new Scanner(file);
-            while(inFile.hasNext()){
-                text.append(inFile.nextLine());
+        fileName = chooser.getSelectedFile().getName();
+        f = chooser.getSelectedFile();
+        System.out.println(fileName);
+        savePath = chooser.getCurrentDirectory().getCanonicalPath();
+        System.out.println(savePath);
+        if (k == JFileChooser.APPROVE_OPTION) {
+            try {
+                FileWriter fw = new FileWriter(chooser.getSelectedFile());
+                fw.write(text.getText());
+                fw.close();
+                sameOpen = true;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    }
+
+        }}
+    /* Save method if the file has been previously saved, determined by sameOpen variable*/
 
     public void saveFile(String k)throws IOException{
 
-        File file = new File(k);
+        File file = new File(savePath);
         FileWriter inFile = new FileWriter(file);
         inFile.write(text.getText());
         inFile.close();
@@ -131,4 +300,98 @@ JOptionPane.showMessageDialog(null,"Saved");
 
 
     }
+
+    //Allows for various actions as the
+    public void buildWindowListener()throws IOException {
+        frame.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(null, "Would you like to open " +
+                        "any previous files?");
+                if(option == 0){
+                    openFile();
+                }
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int option = JOptionPane.showConfirmDialog(null,"Would you like to save" +
+                        " your work?");
+                if(option == 0) {
+                    try {
+                        saveFile(savePath);
+                        System.out.println("1");
+                    } catch (Exception a) {
+                        try {
+                            saveAsFile();
+                            System.out.println("2");
+                        } catch (Exception b) {
+
+                        }
+
+                    }
+                }
+                    frame.dispose();
+                    System.exit(0);
+
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
+
+
+    }
+
+    public void openFile(){
+
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("File Directory");
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        chooser.setAcceptAllFileFilterUsed(true);
+
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            try {
+                savePath = chooser.getCurrentDirectory().getCanonicalPath();
+                fileName = chooser.getSelectedFile().getName();
+                f = chooser.getSelectedFile();
+                text.setText("");
+                Scanner inFile = new Scanner(f);
+                while (inFile.hasNextLine())
+                    text.append(inFile.nextLine());
+                sameOpen = true;
+            }
+            catch(Exception a){
+                a.printStackTrace();
+            }
+        }
+        System.out.println(fileName);
+        System.out.println(savePath);
+    }
+
+
 }
