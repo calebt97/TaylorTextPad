@@ -1,5 +1,5 @@
 # new-IDE
-A VERY basic Notepad that I'll improve on, hopefully an IDE one day. Written purely in java
+A basic text editor that I'll improve on, hopefully an IDE one day. Written purely in java
 If you care to help me improve it, just email me. Any comments or suggestions would be really helpful
 
 1.0: Allowed opening, closing and saving files within a JTextPane. Can change font size and style.
