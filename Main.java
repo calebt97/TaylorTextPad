@@ -11,12 +11,6 @@ import java.awt.*;
 import java.util.*;
 import java.lang.*;
 
-/*
-wishlist for v2:
-build console for output
-highlight syntax
- */
-
 
 public class Main extends JFrame {
 
@@ -173,39 +167,28 @@ public class Main extends JFrame {
                             saveAsFile();
                             System.out.println("2");
                         } catch (Exception b) {
-
                         }
 
                     }
                 }
                     frame.dispose();
                     System.exit(0);
-
             }
-
             @Override
             public void windowClosed(WindowEvent e) {
-
             }
 
             @Override
             public void windowIconified(WindowEvent e) {
-
             }
-
             @Override
             public void windowDeiconified(WindowEvent e) {
-
             }
-
             @Override
             public void windowActivated(WindowEvent e) {
-
             }
-
             @Override
             public void windowDeactivated(WindowEvent e) {
-
             }
         });
 
@@ -214,7 +197,6 @@ public class Main extends JFrame {
 
     //Opens the file, wherever it is within the computer
     public void openFile(){
-
 
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -318,11 +300,9 @@ public class Main extends JFrame {
         size.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-
             }
             @Override
             public void keyPressed(KeyEvent e) {
-
             }
 
             @Override
