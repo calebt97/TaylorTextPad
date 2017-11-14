@@ -9,3 +9,5 @@ However, the output is put in the console of IDE the developer is using. Improve
 Windowlistener gives the option of saving your work before the system exits.
 
 2.1: A few bug fixes, and transferred GUI constructor to various static methods to increase readability.
+
+2.2: A few more bug fixes, and comments for readability
