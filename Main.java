@@ -142,7 +142,7 @@ public class Main extends JFrame {
 
     }
 
-    //Allows for various actions as the
+    //Gives various options upon opening and closing the window.
     public void buildWindowListener()throws IOException {
         frame.addWindowListener(new WindowListener() {
             @Override
@@ -195,7 +195,7 @@ public class Main extends JFrame {
 
     }
 
-    //Opens the file, wherever it is within the computer
+    //Opens the file, wherever it is within the file system. It is found using JFileChooser.
     public void openFile(){
 
         JFileChooser chooser = new JFileChooser();
@@ -206,6 +206,9 @@ public class Main extends JFrame {
 
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
+                //The reason savePath and fileName are taken, is that they're needed for compilation and running
+                //in the CompileAndRun class later on.
+                
                 savePath = chooser.getCurrentDirectory().getCanonicalPath();
                 fileName = chooser.getSelectedFile().getName();
                 f = chooser.getSelectedFile();
@@ -223,7 +226,7 @@ public class Main extends JFrame {
         System.out.println(savePath);
     }
 
-
+//builds the JComboBox that will allow for changing the font style. Arial, TNR, Calibri and Joker
     public JComboBox buildFontLabel(){
 
         String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
@@ -258,7 +261,7 @@ public class Main extends JFrame {
         return font;
     }
 
-
+    //Builds and adds the actionlistener to the quit button. It asks the user to confirm that they're sure they'd like to exit.
     public void buildQuit(){
         quit.addActionListener(new ActionListener() {
             @Override
@@ -269,10 +272,7 @@ public class Main extends JFrame {
                         saveFile(openedName);
                         System.exit(0);
                     }
-                    catch(IOException io){
-                        System.exit(0);
-                    }
-                    catch(Exception i){
+                   catch(Exception i){
                         System.exit(0);
                     }
                 }
@@ -281,20 +281,21 @@ public class Main extends JFrame {
         });
     }
 
-
+//Builds the font size
     public void buildSize(){
         size.setText("20");
         size.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
             }
-
+//If the focus is lost and the box is empty, it defaults to 20.
             @Override
             public void focusLost(FocusEvent e) {
-                if(size.getText().isEmpty())
-                    size.setText("20");
+                if(size.getText().isEmpty()){
+                size.setText("20");
                 fb.setSize(20);
                 text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                }
             }
         });
         size.addKeyListener(new KeyListener() {
@@ -307,6 +308,7 @@ public class Main extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
+                //Takes in new font size, assuming it is an integer, it changes the text size automatically.
                 if(!size.getText().isEmpty()){
 
                     try{
@@ -315,7 +317,7 @@ public class Main extends JFrame {
                         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
                     }
                     catch (Exception a){
-                        System.out.println("Improper input");
+                        JOptionPane.showMessageDialog(null, "Wrong font size input.");
                     }
                 }
 
@@ -323,7 +325,7 @@ public class Main extends JFrame {
         });
     }
 
-
+//Builds the save button, the actual source code for the saving action is kept in the saveFile() method.
     public void buildSave(){
         save.addActionListener(new ActionListener() {
             @Override
@@ -342,7 +344,7 @@ public class Main extends JFrame {
             }});
     }
 
-
+  //Builds the saveAs button, the actual source code for the saving action is kept in the saveAsFile() method
     public void buildSaveAs(){
         saveAs.addActionListener(new ActionListener() {
             @Override
@@ -357,7 +359,7 @@ public class Main extends JFrame {
         });
     }
 
-
+//Builds run button, then calls CompileAndRun class, which attempts to compile and run the text in the JTextArea as java source code.
     public void buildRunButton(){
         run.addActionListener(new ActionListener() {
             @Override
@@ -383,6 +385,7 @@ public class Main extends JFrame {
 
 
     public void buildButtonSettings(){
+        //adds all the earlier built buttons.
         buttonsettings.add(optionsMenu);
         buttonsettings.add(run);
         buttonsettings.add(fontLabel);
@@ -394,7 +397,7 @@ public class Main extends JFrame {
 
     }
 
-    
+    //Puts the last things onto the frame, then makes it visible.
     public void finishUp(){
         text = new JTextArea();
         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
