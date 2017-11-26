@@ -1,5 +1,5 @@
 /**
- * Created by calebtaylor on 7/19/2017, updated twice on 11/13/2017.
+ * Created by calebtaylor on 7/19/2017.
  */
 
 
@@ -11,10 +11,12 @@ import java.awt.*;
 import java.util.*;
 import java.lang.*;
 
+/* This class creates the textpad, allows for saving, opening and editing files. */
+
 
 public class Main extends JFrame {
 
-    JFrame frame;
+   public JFrame frame;
     JTextArea text;
     JMenuItem saveAs;
     JMenuItem save;
@@ -142,7 +144,7 @@ public class Main extends JFrame {
 
     }
 
-    //Gives various options upon opening and closing the window.
+    //Allows for various actions as the
     public void buildWindowListener()throws IOException {
         frame.addWindowListener(new WindowListener() {
             @Override
@@ -167,36 +169,48 @@ public class Main extends JFrame {
                             saveAsFile();
                             System.out.println("2");
                         } catch (Exception b) {
+
                         }
 
                     }
                 }
                     frame.dispose();
                     System.exit(0);
+
             }
+
             @Override
             public void windowClosed(WindowEvent e) {
+
             }
 
             @Override
             public void windowIconified(WindowEvent e) {
+
             }
+
             @Override
             public void windowDeiconified(WindowEvent e) {
+
             }
+
             @Override
             public void windowActivated(WindowEvent e) {
+
             }
+
             @Override
             public void windowDeactivated(WindowEvent e) {
+
             }
         });
 
 
     }
 
-    //Opens the file, wherever it is within the file system. It is found using JFileChooser.
+    //Opens the file, wherever it is within the computer
     public void openFile(){
+
 
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -206,9 +220,6 @@ public class Main extends JFrame {
 
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
-                //The reason savePath and fileName are taken, is that they're needed for compilation and running
-                //in the CompileAndRun class later on.
-                
                 savePath = chooser.getCurrentDirectory().getCanonicalPath();
                 fileName = chooser.getSelectedFile().getName();
                 f = chooser.getSelectedFile();
@@ -226,7 +237,7 @@ public class Main extends JFrame {
         System.out.println(savePath);
     }
 
-//builds the JComboBox that will allow for changing the font style. Arial, TNR, Calibri and Joker
+    //Sets font
     public JComboBox buildFontLabel(){
 
         String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
@@ -261,7 +272,7 @@ public class Main extends JFrame {
         return font;
     }
 
-    //Builds and adds the actionlistener to the quit button. It asks the user to confirm that they're sure they'd like to exit.
+
     public void buildQuit(){
         quit.addActionListener(new ActionListener() {
             @Override
@@ -272,7 +283,7 @@ public class Main extends JFrame {
                         saveFile(openedName);
                         System.exit(0);
                     }
-                   catch(Exception i){
+                    catch(Exception i){
                         System.exit(0);
                     }
                 }
@@ -281,34 +292,35 @@ public class Main extends JFrame {
         });
     }
 
-//Builds the font size
+
     public void buildSize(){
         size.setText("20");
         size.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
             }
-//If the focus is lost and the box is empty, it defaults to 20.
+
             @Override
             public void focusLost(FocusEvent e) {
-                if(size.getText().isEmpty()){
-                size.setText("20");
-                fb.setSize(20);
-                text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
+                if(size.getText().isEmpty()) {
+                    size.setText("20");
+                    fb.setSize(20);
+                    text.setFont(new Font(fb.getStyle(), fb.getPLAIN(), fb.getSize()));
                 }
             }
         });
         size.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
+
             }
             @Override
             public void keyPressed(KeyEvent e) {
+
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                //Takes in new font size, assuming it is an integer, it changes the text size automatically.
                 if(!size.getText().isEmpty()){
 
                     try{
@@ -325,7 +337,7 @@ public class Main extends JFrame {
         });
     }
 
-//Builds the save button, the actual source code for the saving action is kept in the saveFile() method.
+
     public void buildSave(){
         save.addActionListener(new ActionListener() {
             @Override
@@ -344,7 +356,7 @@ public class Main extends JFrame {
             }});
     }
 
-  //Builds the saveAs button, the actual source code for the saving action is kept in the saveAsFile() method
+
     public void buildSaveAs(){
         saveAs.addActionListener(new ActionListener() {
             @Override
@@ -359,7 +371,7 @@ public class Main extends JFrame {
         });
     }
 
-//Builds run button, then calls CompileAndRun class, which attempts to compile and run the text in the JTextArea as java source code.
+
     public void buildRunButton(){
         run.addActionListener(new ActionListener() {
             @Override
@@ -383,9 +395,8 @@ public class Main extends JFrame {
         });
     }
 
-
+//Adds the top bar to the textpad
     public void buildButtonSettings(){
-        //adds all the earlier built buttons.
         buttonsettings.add(optionsMenu);
         buttonsettings.add(run);
         buttonsettings.add(fontLabel);
@@ -397,7 +408,7 @@ public class Main extends JFrame {
 
     }
 
-    //Puts the last things onto the frame, then makes it visible.
+//adds the final touches to the frame.
     public void finishUp(){
         text = new JTextArea();
         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
@@ -410,4 +421,6 @@ public class Main extends JFrame {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+
 }
