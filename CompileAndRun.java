@@ -6,25 +6,34 @@ import java.io.InputStream;
  and error messages
  */
 public class CompileAndRun {
-    String savePath;
+
     String fileName;
     String withoutExtension;
     OutputConsole console;
+    String savePath;
 
 
     public CompileAndRun(String fileName, String savePath) {
         console = new OutputConsole();
         console.build();
-        this.fileName = fileName;
         this.savePath = savePath;
+        this.fileName = fileName;
+
         String[] tokens = fileName.split("\\.");
         withoutExtension = tokens[0];
+    }
+    public void runAsJava(){
         try {
-             compile(fileName);
-             run(withoutExtension);
+            compile(fileName);
+            run(withoutExtension);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    public void updateFile(String s){
+        this.fileName = s;
+        String[] tokens = fileName.split("\\.");
+        withoutExtension = tokens[0];
     }
 
     //builds another process to run the compiled class
