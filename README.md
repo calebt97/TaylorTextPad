@@ -13,3 +13,5 @@ Windowlistener gives the option of saving your work before the system exits.
 2.2: A few more bug fixes, and comments for readability
 
 3.0: Added a console for output from the code written in the textpad. The console was built using JTextPane. The code output is appended to the console. More bug fixes.
+
+3.1: Minor fixes to the OutputConsole.java and CompileAndRun.java files. Save method in the Main.java was producing a copy, not overwriting the file. So I fixed that using static File object. 
