@@ -23,7 +23,6 @@ public class Main extends JFrame {
     JPanel buttonsettings;
     JTextField size;
     boolean sameOpen = false; //will enable "Save function" if set to true later on
-    String openedName;
     JMenuItem quit;
     FontBuilder fb;
     JMenuItem fileDirectory;
@@ -34,7 +33,8 @@ public class Main extends JFrame {
     JMenuBar optionsMenu;
     JComboBox font;
     JLabel sizeLabel;
-    File f;
+    static File toBeSaved;
+    CompileAndRun CandR;
 
     public Main() throws IOException{
 
@@ -116,10 +116,8 @@ public class Main extends JFrame {
         int k = chooser.showSaveDialog(null);
 
         fileName = chooser.getSelectedFile().getName();
-        f = chooser.getSelectedFile();
-        System.out.println(fileName);
+        toBeSaved = chooser.getSelectedFile();
         savePath = chooser.getCurrentDirectory().getCanonicalPath();
-        System.out.println(savePath);
         if (k == JFileChooser.APPROVE_OPTION) {
             try {
                 FileWriter fw = new FileWriter(chooser.getSelectedFile());
@@ -131,16 +129,13 @@ public class Main extends JFrame {
             }
 
         }}
-    /* Save method if the file has been previously saved, determined by sameOpen variable*/
+    
+    public void saveFile()throws IOException{
 
-    public void saveFile(String k)throws IOException{
-
-        File file = new File(savePath);
-        FileWriter inFile = new FileWriter(file);
+        FileWriter inFile = new FileWriter(toBeSaved);
         inFile.write(text.getText());
         inFile.close();
         JOptionPane.showMessageDialog(null,"Saved");
-
 
     }
 
@@ -162,7 +157,7 @@ public class Main extends JFrame {
                         " your work?");
                 if(option == 0) {
                     try {
-                        saveFile(savePath);
+                        saveFile();
                         System.out.println("1");
                     } catch (Exception a) {
                         try {
@@ -222,9 +217,9 @@ public class Main extends JFrame {
             try {
                 savePath = chooser.getCurrentDirectory().getCanonicalPath();
                 fileName = chooser.getSelectedFile().getName();
-                f = chooser.getSelectedFile();
+                toBeSaved = chooser.getSelectedFile();
                 text.setText("");
-                Scanner inFile = new Scanner(f);
+                Scanner inFile = new Scanner(toBeSaved);
                 while (inFile.hasNextLine())
                     text.append(inFile.nextLine());
                 sameOpen = true;
@@ -280,7 +275,7 @@ public class Main extends JFrame {
                 int option = JOptionPane.showConfirmDialog(null, "Are you sure you wish to quit?");
                 if(option == 0){
                     try {
-                        saveFile(openedName);
+                        saveFile();
                         System.exit(0);
                     }
                     catch(Exception i){
@@ -344,7 +339,7 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(sameOpen){
                     try {
-                        saveFile(savePath);
+                        saveFile();
                     } catch (IOException a) {
                         a.printStackTrace();
                     }
@@ -384,7 +379,8 @@ public class Main extends JFrame {
                     catch(Exception a){a.printStackTrace();}
                 }
                 try {
-                    new CompileAndRun(fileName,savePath);
+                   CandR = new CompileAndRun(fileName,savePath);
+                   CandR.runAsJava();
                     System.out.println("Completed");
 
                 }
@@ -395,7 +391,7 @@ public class Main extends JFrame {
         });
     }
 
-//Adds the top bar to the textpad
+
     public void buildButtonSettings(){
         buttonsettings.add(optionsMenu);
         buttonsettings.add(run);
@@ -408,7 +404,7 @@ public class Main extends JFrame {
 
     }
 
-//adds the final touches to the frame.
+
     public void finishUp(){
         text = new JTextArea();
         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
