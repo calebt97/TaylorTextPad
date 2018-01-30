@@ -35,6 +35,7 @@ public class Main extends JFrame {
     JLabel sizeLabel;
     static File toBeSaved;
     CompileAndRun CandR;
+    int timesKeyPressed = 0;
 
     public Main() throws IOException{
 
@@ -129,7 +130,7 @@ public class Main extends JFrame {
             }
 
         }}
-    
+
     public void saveFile()throws IOException{
 
         FileWriter inFile = new FileWriter(toBeSaved);
@@ -379,6 +380,9 @@ public class Main extends JFrame {
                     catch(Exception a){a.printStackTrace();}
                 }
                 try {
+                    FileWriter inFile = new FileWriter(toBeSaved);
+                    inFile.write(text.getText());
+                    inFile.close();
                    CandR = new CompileAndRun(fileName,savePath);
                    CandR.runAsJava();
                     System.out.println("Completed");
@@ -410,6 +414,32 @@ public class Main extends JFrame {
         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
         text.setWrapStyleWord(true);
         text.setLineWrap(true);
+        text.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                timesKeyPressed++;
+                if (timesKeyPressed >= 25 && sameOpen) {
+                    try {
+                        FileWriter inFile = new FileWriter(toBeSaved);
+                        inFile.write(text.getText());
+                        inFile.close();
+                        timesKeyPressed = 0;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
         frame.setTitle("TaylorTextPad");
         buttonsettings.setSize(JFrame.WIDTH,200);
         frame.add(text);
