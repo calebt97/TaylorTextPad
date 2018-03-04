@@ -11,35 +11,54 @@ import java.awt.*;
 import java.util.*;
 import java.lang.*;
 
-/* This class creates the textpad, allows for saving, opening and editing files. */
+/*
+NOTE: This entire class will be broken down (it is way to big) and reorganized while building a new GUI with JavaFX.
+This class creates the textpad, allows for saving, opening and editing files.
+*/
 
 
 public class Main extends JFrame {
-
+/*The vast majority of these variables are for GUI construction. So I wont comment and explain each one.
+However, I will explain the other ones that have to do with logic/etc.
+*/
    public JFrame frame;
     JTextArea text;
     JMenuItem saveAs;
     JMenuItem save;
     JPanel buttonsettings;
     JTextField size;
-    boolean sameOpen = false; //will enable "Save function" if set to true later on
+   
+   /*
+   If the "open" or "save as" methods are called, it sets sameOpen to true. This enables the save function.
+   If the save function tried to run without either of the other two being called first, it wouldn't have the full
+   filepath to save the file
+   */
+    boolean sameOpen = false;  
     JMenuItem quit;
     FontBuilder fb;
     JMenuItem fileDirectory;
+   
+   /*
+   These two work hand and hand, both used for saving and running files. Used in constructor of CompileAndRun 
+   */
     String savePath;
-    JButton run;
     String fileName;
+    JButton run;
     JLabel fontLabel;
     JMenuBar optionsMenu;
     JComboBox font;
     JLabel sizeLabel;
+   
+   //Works in conjunction with sameOpen boolean variable.
     static File toBeSaved;
     CompileAndRun CandR;
+   
+   //Every 25 times the a key is pressed, the windowlistener will call the "save" method if the sameOpen boolean variable is also true.
     int timesKeyPressed = 0;
 
     public Main() throws IOException{
 
-        //defaults font
+        //defaults font, initializes object for potentially further use.
         fb = new FontBuilder();
 
         //creates the GUI, *note to increase size to full screen remove resizable clause
@@ -115,15 +134,21 @@ public class Main extends JFrame {
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("/home/me/Documents"));
         int k = chooser.showSaveDialog(null);
-
+        
+        /*
+       These 3 variables are used for the CompileAndRun class, as well as "saving",
+       so that the computer knows the exact location of the file.
+       */
         fileName = chooser.getSelectedFile().getName();
         toBeSaved = chooser.getSelectedFile();
         savePath = chooser.getCurrentDirectory().getCanonicalPath();
+       //If the user approves the saving through the JFileChooser button, then it enters this.
         if (k == JFileChooser.APPROVE_OPTION) {
             try {
-                FileWriter fw = new FileWriter(chooser.getSelectedFile());
+                FileWriter fw = new FileWriter(toBeSaved);
                 fw.write(text.getText());
                 fw.close();
+             //Enables the "save" method to be ran  
                 sameOpen = true;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -132,7 +157,7 @@ public class Main extends JFrame {
         }}
 
     public void saveFile()throws IOException{
-
+      //Goes to the exact location of the current file, overwrites everything then displays "Saved"
         FileWriter inFile = new FileWriter(toBeSaved);
         inFile.write(text.getText());
         inFile.close();
@@ -140,7 +165,7 @@ public class Main extends JFrame {
 
     }
 
-    //Allows for various actions as the
+    //Allows for various actions as the window closes or opens. "Autosaves" the file if sameOpen is true.
     public void buildWindowListener()throws IOException {
         frame.addWindowListener(new WindowListener() {
             @Override
@@ -207,7 +232,7 @@ public class Main extends JFrame {
     //Opens the file, wherever it is within the computer
     public void openFile(){
 
-
+        
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
         chooser.setDialogTitle("File Directory");
@@ -219,10 +244,13 @@ public class Main extends JFrame {
                 savePath = chooser.getCurrentDirectory().getCanonicalPath();
                 fileName = chooser.getSelectedFile().getName();
                 toBeSaved = chooser.getSelectedFile();
+               
+                //clears the textpad before appending anything new to it.
                 text.setText("");
                 Scanner inFile = new Scanner(toBeSaved);
                 while (inFile.hasNextLine())
                     text.append(inFile.nextLine());
+               //enables the "save" function
                 sameOpen = true;
             }
             catch(Exception a){
@@ -235,13 +263,14 @@ public class Main extends JFrame {
 
     //Sets font
     public JComboBox buildFontLabel(){
-
+             //A list of possible fonts to be used. The JTextPad font will automatically reflect the changes. 
         String[] fontChoices = new String[]{"Arial", "Times New Roman", "Calibri","Joker"};
         JComboBox font = new JComboBox(fontChoices);
         font.setPreferredSize(new Dimension(75,25));
         font.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+              
 
                 int index = font.getSelectedIndex();
                 try{
@@ -260,6 +289,8 @@ public class Main extends JFrame {
                 catch(Exception error){
                     error.printStackTrace();
                 }
+               
+               //sets the font to the new specifications then repaints the frame so that everything will update. 
                 text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
                 frame.repaint();
 
@@ -408,7 +439,7 @@ public class Main extends JFrame {
 
     }
 
-
+//Completes the GUI construction. Brings everything together and makes the frame visible.
     public void finishUp(){
         text = new JTextArea();
         text.setFont(new Font(fb.getStyle(),fb.getPLAIN(),fb.getSize()));
@@ -427,6 +458,7 @@ public class Main extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
+               //Autosave function.
                 timesKeyPressed++;
                 if (timesKeyPressed >= 25 && sameOpen) {
                     try {
