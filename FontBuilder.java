@@ -1,10 +1,15 @@
-/**
- * Created by calebtaylor on 7/20/2017.
- */
+
+/*Changes font and size.*/
 public class FontBuilder {
-    String style = "Arial";
-    static int size = 20;
-    static int PLAIN = 0;
+
+    String style;
+    static int size;
+    static int PLAIN;
+    public FontBuilder(){
+        style = "Arial";
+        size = 20;
+        PLAIN = 0;
+    }
 
     public String getStyle() {
         return style;
@@ -14,23 +19,25 @@ public class FontBuilder {
         this.style = style;
     }
 
-    public int getSize() {
+    public static int getSize() {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public static void setSize(int size) {
+        FontBuilder.size = size;
     }
 
-    public int getPLAIN() {
+    public static int getPLAIN() {
         return PLAIN;
     }
 
-    public void setPLAIN(int PLAIN) {
-        this.PLAIN = PLAIN;
+    public static void setPLAIN(int PLAIN) {
+        FontBuilder.PLAIN = PLAIN;
     }
 
-    public FontBuilder(){}
+
+
+
 
 
 }
