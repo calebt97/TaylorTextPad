@@ -18,4 +18,4 @@ Windowlistener gives the option of saving your work before the system exits.
 
 3.2: Minor bug fixes. File autosaves without asking user every 25 keys typed. File autosaves when asked to run, assuming it has already been "save as"ed or opened from the file directory.
 
-3.21: More comments/explanations. I will soon revamp the entire GUI using JavaFX and reorganize the code structure. I hope to complete that before April.
+3.21: More comments/explanations. Changed constructor for FontBuilder class. I will soon revamp the entire GUI using JavaFX and reorganize the code structure. I hope to complete that before April.
