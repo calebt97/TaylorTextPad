@@ -1,4 +1,9 @@
-/*Creates the console to display the output of java code that has been ran*/
+/*
+Creates the console to display the output of java code that has been ran. The console currently isn't attached to anything.
+But once I revamp the GUI, I will attach it to the bottom of the textpad, minimized until the CaR has things to display.
+This class works exclusively in conjunction with the CompileAndRun class abbreviation "CaR".
+I won't break down each GUI related variable, but I will explain the more complicated parts and logic.
+*/
 
 
  import javax.swing.*;
@@ -13,14 +18,20 @@ import java.awt.*;
  public class OutputConsole extends JFrame {
     JFrame consoleFrame;
     JTextPane console;
+    /*
+    Most important variable here. If the user closes the console window, this variable changes.
+    That way, the CaR knows to make it visible once again when it has output to show the user.
+    Otherwise, it would be appending to a console that no one can see.
+    */
     private boolean doesExist = false;
     StyledDocument doc;
     SimpleAttributeSet keyWord;
+  
     //no arg constructor, does nothing.
     public OutputConsole(){
     }
 
-    //builds console and
+    //builds console and styles the font.
     public void build(){
         consoleFrame = new JFrame();
         buildConsoleListener();
@@ -34,7 +45,7 @@ import java.awt.*;
         consoleFrame.add(console);
     }
 
-    //appends Text
+    //appends Text as the CaR creates it.
     public void append(String message){
         try {
             doc.insertString(doc.getLength(), message, keyWord);
@@ -43,6 +54,7 @@ import java.awt.*;
             e.printStackTrace();
         }
     }
+    
     public boolean doesExist(){
         return doesExist;
     }
@@ -61,7 +73,7 @@ import java.awt.*;
         consoleFrame.setVisible(true);
     }
 
-
+      
     private void buildConsoleListener(){
         consoleFrame.addWindowListener(new WindowListener() {
             @Override
