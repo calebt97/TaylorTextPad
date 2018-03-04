@@ -1,11 +1,15 @@
 
-/*Changes font and size.*/
+/*
+Changes font and size. Pretty simple, just a list of Getter/Setter Methods to store various font configurations
+that the user sees while using the textpad. It begins as plain, 20pt arial font and changes as the user desires.
+*/
 public class FontBuilder {
 
     String style;
     static int size;
     static int PLAIN;
-    public FontBuilder(){
+    
+    public FontBuilder(){.
         style = "Arial";
         size = 20;
         PLAIN = 0;
