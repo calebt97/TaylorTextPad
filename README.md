@@ -17,3 +17,5 @@ Windowlistener gives the option of saving your work before the system exits.
 3.1: Minor fixes to the OutputConsole.java and CompileAndRun.java files. Save method in the Main.java was producing a copy, not overwriting the file. So I fixed that using a static File object. 
 
 3.2: Minor bug fixes. File autosaves without asking user every 25 keys typed. File autosaves when asked to run, assuming it has already been "save as"ed or opened from the file directory.
+
+3.21: More comments/explanations. I will soon revamp the entire GUI using JavaFX and reorganize the code structure. I hope to complete that before April
