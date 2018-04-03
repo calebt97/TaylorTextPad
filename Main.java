@@ -472,6 +472,8 @@ However, I will explain the other ones that have to do with logic/etc.
                 }
             }
         });
+       
+       //Completes UI construction.
         frame.setTitle("TaylorTextPad");
         buttonsettings.setSize(JFrame.WIDTH,200);
         frame.add(text);
