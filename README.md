@@ -20,7 +20,7 @@ Windowlistener gives the option of saving your work before the system exits.
 
 **3.21**: More comments/explanations. Changed constructor for FontBuilder class.
 
-**3.22(Final Version)**:Ran through linter and applied suggested changes. Finalized documentation.
+**3.22(Final Version)**: Ran through linter and applied suggested changes. Finalized documentation.
 
 
 ##                                                      How To Run:
