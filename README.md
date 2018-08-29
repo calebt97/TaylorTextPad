@@ -24,7 +24,7 @@ Windowlistener gives the option of saving your work before the system exits.
 
 
 ##                                                      How To Run:
-Simply download the entire set of files in either a zip file or clone it. Then hit run using the JVM in your text editor. It has no dependencies.
+Simply download the entire set of files in either a zip file or clone it. There are no dependencies or additional libraries. 
 
 ##                                                      How to Contribute:
 This project is no longer open to further contributions.
