@@ -1,5 +1,5 @@
 # TaylorTextPad
-### A basic text editor that I'll improve on, hopefully an IDE one day. Written purely in java
+### A basic text editor. Written purely in java
 
 ##                                                 Update History:
 **1.0**: Allowed opening, closing and saving files within a JTextPane. Can change font size and style.
