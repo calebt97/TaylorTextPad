@@ -25,10 +25,10 @@ Windowlistener gives the option of saving your work before the system exits.
 
 ##                                                      How To Run:
 Once cloned, from the command line navigate into the src directory. From there run
-'''
+```
 javac Main.java
 java Main
-'''
+```
 
 ##                                                      How to Contribute:
 This project is no longer open to further contributions.
